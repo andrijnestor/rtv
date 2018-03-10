@@ -6,7 +6,7 @@
 /*   By: anestor <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/10/25 13:28:55 by anestor           #+#    #+#             */
-/*   Updated: 2018/03/08 23:24:16 by anestor          ###   ########.fr       */
+/*   Updated: 2018/03/10 01:17:01 by anestor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,20 @@ typedef struct		s_list
 	size_t			content_size;
 	struct s_list	*next;
 }					t_list;
+
+typedef struct		s_xyz
+{
+	int				x;
+	int				y;
+	int				z;
+}					t_xyz;
+
+typedef struct		s_dxyz
+{
+	double			x;
+	double			y;
+	double			z;
+}					t_dxyz;
 
 typedef struct		s_xy
 {

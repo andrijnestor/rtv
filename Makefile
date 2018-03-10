@@ -6,7 +6,7 @@
 #    By: anestor <anestor@student.unit.ua>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/02/09 19:34:27 by anestor           #+#    #+#              #
-#    Updated: 2018/03/09 20:41:57 by anestor          ###   ########.fr        #
+#    Updated: 2018/03/10 00:08:55 by anestor          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ FWORKS				= $(FWORK) -rpath ./frameworks \
 						-framework SDL2 -framework SDL2_image
 MLX					= -L/usr/local/lib -lmlx
 OBJ_DIR				= obj/
-EXT					= rtv1.h
+EXT					= rtv.h
 
 SRC					=
 SRC					+= main.c
