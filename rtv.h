@@ -6,7 +6,7 @@
 /*   By: anestor <anestor@student.unit.ua>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/10 00:02:16 by anestor           #+#    #+#             */
-/*   Updated: 2018/03/10 16:31:14 by anestor          ###   ########.fr       */
+/*   Updated: 2018/03/11 02:26:51 by anestor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,13 @@ typedef struct		s_cam
 {
 	int				w;
 	int				h;
-	t_xyz			v;
-	t_xyz			pos;	
+	t_dxyz			v;
+	t_dxyz			pos;	
 }					t_cam;
 
 typedef struct		s_sphere
 {
-	t_xyz			center;
+	t_dxyz			center;
 	int				radius;
 	int				color;
 }					t_sphere;
@@ -58,6 +58,7 @@ typedef struct		s_rtv
 	t_cam			cam;
 	t_sphere		*spheres;
 	int				spheres_n;
+	int				*pixels;
 }					t_rtv;
 
 #endif
