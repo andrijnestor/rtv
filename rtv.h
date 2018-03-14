@@ -6,7 +6,7 @@
 /*   By: anestor <anestor@student.unit.ua>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/10 00:02:16 by anestor           #+#    #+#             */
-/*   Updated: 2018/03/11 02:26:51 by anestor          ###   ########.fr       */
+/*   Updated: 2018/03/14 15:25:10 by anestor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@
 # include <stdio.h>
 # include <SDL2/SDL.h>
 # include <SDL2_image/SDL_image.h>
-# define WIN_H 800
-# define WIN_W 1200
+# define WIN_H 600
+# define WIN_W 600
 # define WIN_POS_X 200
 # define WIN_POS_Y 200
 # define VIEWPORT_SIZE 1
@@ -44,7 +44,7 @@ typedef struct		s_cam
 typedef struct		s_sphere
 {
 	t_dxyz			center;
-	int				radius;
+	double			radius;
 	int				color;
 }					t_sphere;
 

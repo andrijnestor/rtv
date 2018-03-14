@@ -6,7 +6,7 @@
 /*   By: anestor <anestor@student.unit.ua>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/03/09 17:51:32 by anestor           #+#    #+#             */
-/*   Updated: 2018/03/11 02:33:18 by anestor          ###   ########.fr       */
+/*   Updated: 2018/03/14 18:01:34 by anestor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,17 @@ int		key_hooks(t_rtv *o)
 	return (0);
 }
 
-t_dxyz	ft_xyz(int x, int y, int z)
+t_xyz	ft_xyz(int x, int y, int z)
+{
+	t_xyz	tmp;
+
+	tmp.x = x;
+	tmp.y = y;
+	tmp.z = z;
+	return (tmp);
+}
+
+t_dxyz	ft_dxyz(double x, double y, double z)
 {
 	t_dxyz	tmp;
 
@@ -92,17 +102,17 @@ void	put_pixel(int x, int y, int color, t_rtv *o)
 	t_xy	i;
 
 	i.x = x + WIN_W / 2;
-	i.y = y + WIN_H / 2;
+	i.y = WIN_H / 2 - y - 1;
 	if (i.x < 0 || i.y < 0 || i.x >= WIN_W || i.y >= WIN_H)
 		return ;
 //	*(int *)(o->surface->pixels + (i.x + i.y * WIN_W) * sizeof(int)) = color;
 	*(o->pixels + i.x + i.y * WIN_W) = color;
 }
 
-t_dxy	intersect_ray_sphere(t_dxyz o, t_dxyz d, t_sphere sphere)
+t_dxy	intersect_ray_sphere(t_dxyz cam_pos, t_dxyz vec, t_sphere sphere)
 {
 	t_dxyz	c;
-	int		r;
+	float	r;
 	t_dxyz	oc;
 	t_dxyz	i;
 	t_dxy	t;
@@ -110,43 +120,46 @@ t_dxy	intersect_ray_sphere(t_dxyz o, t_dxyz d, t_sphere sphere)
 
 	c = sphere.center;
 	r = sphere.radius;
-	oc = ft_xyz_minus(o, c);
-	i.x = ft_dot(d, d);
-	i.y = 2 * ft_dot(oc, d);
+	oc = ft_xyz_minus(cam_pos, c);
+//	printf("oc %f %f %f\n", oc.x, oc.y, oc.z);
+	i.x = ft_dot(vec, vec);
+	i.y = 2 * ft_dot(oc, vec);
 	i.z = ft_dot(oc, oc) - r * r;
 //	printf("%d %d %d\n", i.x, i.y, i.z);
 	discriminant = i.y * i.y - 4 * i.x * i.z;
 //	printf("%f\n", discriminant);
 	if (discriminant < 0)
 	{
-		t.x = INT_MAX;
-		t.y = INT_MAX;
+		t.x = DBL_MAX;
+		t.y = DBL_MAX;
 //		printf("here\n");
 	}
 	else
 	{
 		t.x = (-i.y + sqrt(discriminant)) / (2 * i.x);
 		t.y = (-i.y - sqrt(discriminant)) / (2 * i.x);
+/*
 		printf("t.x %f t.y %f o.x %f o.y %f o.z %f d.x %f d.y %f d.z %f sphere.x %f sphere.y %f sphere.z %f sphere.radius %d\n",
 				t.x, t.y, o.x, o.y, o.x, d.x, d.y, d.z,
 				sphere.center.x, sphere.center.y, sphere.center.z, sphere.radius);
-	}
+*/
+				}
 	return (t);
 }
 
-int		trace_ray(t_dxyz a, t_dxyz d, int t_min, int t_max, t_rtv *o)
+int		trace_ray(t_dxyz cam_pos, t_dxyz vec, double t_min, double t_max, t_rtv *o)
 {
 	int			i;
 	double		closest_t;
 	t_sphere	closest_sphere;
 	t_dxy		t;
 
-	closest_t = INT_MAX;
+	closest_t = DBL_MAX;
 	closest_sphere.radius = 0;
 	i = 0;
 	while (i != o->spheres_n)
 	{
-		t = intersect_ray_sphere(a, d, o->spheres[i]);
+		t = intersect_ray_sphere(cam_pos, vec, o->spheres[i]);
 		if (t.x > t_min && t.x < t_max && t.x < closest_t)
 		{
 			closest_t = t.x;
@@ -160,7 +173,7 @@ int		trace_ray(t_dxyz a, t_dxyz d, int t_min, int t_max, t_rtv *o)
 		i++;
 	}
 	if (closest_sphere.radius == 0)
-		return (0xAA00AA);
+		return (0x0000FF);
 	return (closest_sphere.color);
 }
 
@@ -170,7 +183,7 @@ void	ray_tracing(t_rtv *o)
 	t_dxyz	vec;
 	int		color;
 
-	o->cam.pos = ft_xyz(0, 0, 0);
+	o->cam.pos = ft_dxyz(0, 0, 0);
 	i.x = -WIN_W / 2;
 	while (i.x != WIN_W / 2)
 	{
@@ -178,8 +191,8 @@ void	ray_tracing(t_rtv *o)
 		while (i.y != WIN_H / 2)
 		{
 			vec = canvas_to_viewport(i.x, i.y, o);
-			color = trace_ray(o->cam.pos, vec, 1, INT_MAX, o);
-			put_pixel(i.x, i.y, 0xFFFFFF, o);
+			color = trace_ray(o->cam.pos, vec, 1, DBL_MAX, o);
+			put_pixel(i.x, i.y, color, o);
 			i.y++;
 		}
 		i.x++;
@@ -202,21 +215,21 @@ int		main(void)
 		return (printf("render"));
 //	o->surface = SDL_CreateRGBSurface(0, WIN_W, WIN_H, 32, 0, 0, 0, 0);
 
-	o->cam.h = 1;
-	o->cam.w = 1;
+	o->cam.h = 20;
+	o->cam.w = 20;
 
 	t_sphere	tmp;
-	o->spheres_n = 1;
+	o->spheres_n = 2;
 	o->spheres = ft_memalloc(sizeof(t_sphere) * o->spheres_n);
-	tmp.center = ft_xyz(0, -1, 3);
+	tmp.center = ft_dxyz(0, -1, 3);
 	tmp.radius = 1;
 	tmp.color = 0xFF0000;
-/*
-	ft_memcpy(o->spheres, &tmp, sizeof(t_sphere));
-	tmp.center = ft_xyz(2, 0, 4);
+	ft_memcpy(&o->spheres[0], &tmp, sizeof(t_sphere));
+	tmp.center = ft_dxyz(2, 0, 4);
 	tmp.radius = 1;
-	tmp.color = 0xFF0000;
-	ft_memcpy(o->spheres + sizeof(t_sphere), &tmp, sizeof(t_sphere));
+	tmp.color = 0x00FF00;
+	ft_memcpy(&o->spheres[1], &tmp, sizeof(t_sphere));
+	/*
 	tmp.center = ft_xyz(-2, 0, 4);
 	tmp.radius = 1;
 	tmp.color = 0xFF0000;
@@ -224,6 +237,7 @@ int		main(void)
 */
 
 //	o->texture = SDL_CreateTextureFromSurface(o->renderer, o->surface);
+
 	if (!(o->texture = SDL_CreateTexture(o->renderer, SDL_PIXELFORMAT_ARGB8888,
 							SDL_TEXTUREACCESS_STATIC, WIN_W, WIN_H)))
 		return (printf("texture"));	
